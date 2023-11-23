@@ -53,7 +53,7 @@ def set_referrer_code(token, code):
 # Main program
 if __name__ == "__main__":
   referrer_code = args.code or input("Enter Referrer Code: ")
-  sign_up_times = args.number or 20
+  sign_up_times = int(args.number) or 20
 
   for _ in trange(sign_up_times, desc='Sign-up'):
     # Try 3 times
