@@ -13,6 +13,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 parser = argparse.ArgumentParser(description = "Sidekick Browser referrer code booster")
 parser.add_argument("-c", "--code", help = "Referrer Code")
 parser.add_argument("-n", "--number", help = "Sign-up times. Default: 20")
+parser.add_argument("-r", "--retry", help = "Retry times if error. Default: 3")
 args = parser.parse_args()
 
 # Generate random string for X-Device-Id
@@ -43,7 +44,12 @@ def set_referrer_code(token, code):
     'code': code,
   }
 
-  response = requests.post('https://api.meetsidekick.com/extension/me/change_inviter', headers=headers, json=json_data, verify=False)
+  response = requests.post(
+    'https://api.meetsidekick.com/extension/me/change_inviter',
+    headers=headers,
+    json=json_data,
+    verify=False
+  )
 
   if (response.status_code == 200):
     return True
@@ -53,12 +59,12 @@ def set_referrer_code(token, code):
 # Main program
 if __name__ == "__main__":
   referrer_code = args.code or input("Enter Referrer Code: ")
-  sign_up_times = int(args.number) or 20
+  sign_up_times = int(args.number) if args.number else 20
+  retry_times = int(args.retry) if args.retry else 3
 
-  for _ in trange(sign_up_times, desc='Sign-up'):
-    # Try 3 times
-    retry = 3
-    for i in range(retry):
+  for _ in trange(sign_up_times,
+                  desc='Sign-up'):
+    for i in range(retry_times):
       token = get_token()
       if token is None:
         print('Failed when connecting to server')
@@ -69,7 +75,7 @@ if __name__ == "__main__":
         break
 
       print(f'Failed to set referrer code {referrer_code}: {response.get("message", "Server error")}')
-      if (i == retry - 1):
+      if (i == retry_times - 1):
         print('It seems the tool is not working, please check again')
         sys.exit(0)
       sleep(1)
