@@ -1,4 +1,10 @@
 dist/
 build/
+main.build
+main.dist
+main.onefile*
 .DS_Store
+nuitka*
+
 *.spec
+*.bin
